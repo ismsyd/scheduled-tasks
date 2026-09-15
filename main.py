@@ -27,29 +27,27 @@ for month in data_months:
         for day in days:
             if day == today['day']:
                 name = data[data.day == day].name.values #list of items
-                email = data[data.day == day].email.values #list of items
-                try:
-                    compatible['names'] = list(name)
-                except KeyError:
-                    sys.exit(1)
-                try:
-                    compatible['emails'] = list(email)
-                except KeyError:
-                    sys.exit(1)
+                email = data[data.day == day].email.values #list of items:
+                compatible['names'] = list(name)
+                compatible['emails'] = list(email)
                 
 
 random_file_nb = random.randint(1,3)
 with open(f"./letter_templates/letter_{random_file_nb}.txt", 'r') as letter:
     text = letter.read()
-    for name,email in zip(compatible['names'],compatible['emails']):
-        new_text = text.replace('[NAME]',name)
-        #start smtp send new_text as msg and use email as to_addrs
-        with smtplib.SMTP(smtp_server,port=587) as connection:
-            connection.starttls()
-            connection.login(user=my_email, password=password)
-            connection.sendmail(
-                from_addr=my_email,
-                to_addrs=email,
-                msg=f"Subject:Happy Birthday {name}\n\n"+new_text
-            )
+    try:
+        for name,email in zip(compatible['names'],compatible['emails']):
+            new_text = text.replace('[NAME]',name)
+            #start smtp send new_text as msg and use email as to_addrs
+            with smtplib.SMTP(smtp_server,port=587) as connection:
+                connection.starttls()
+                connection.login(user=my_email, password=password)
+                connection.sendmail(
+                    from_addr=my_email,
+                    to_addrs=email,
+                    msg=f"Subject:Happy Birthday {name}\n\n"+new_text
+                )
+    except KeyError:
+        print("No birthdays today")
+        sys.exit(1)
 
