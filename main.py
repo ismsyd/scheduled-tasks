@@ -1,4 +1,4 @@
-import pandas,smtplib,random,os
+import pandas,smtplib,random,os,sys
 import datetime as dt
 #info for smtp
 #TODO allow the user to set these when the code is first ran
@@ -28,8 +28,15 @@ for month in data_months:
             if day == today['day']:
                 name = data[data.day == day].name.values #list of items
                 email = data[data.day == day].email.values #list of items
-                compatible['names'] = list(name)
-                compatible['emails'] = list(email)
+                try:
+                    compatible['names'] = list(name)
+                except KeyError:
+                    sys.exit(1)
+                try:
+                    compatible['emails'] = list(email)
+                except KeyError:
+                    sys.exit(1)
+                
 
 random_file_nb = random.randint(1,3)
 with open(f"./letter_templates/letter_{random_file_nb}.txt", 'r') as letter:
